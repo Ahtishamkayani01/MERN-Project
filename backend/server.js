@@ -13,13 +13,14 @@ const adminRoute = require("./routes/admin-route");
 const connectDB = require("./utils/db");
 
 // CORS — allow frontend dev server
-app.use(
-  cors({
-    origin: "http://localhost:5173",
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true,
-  })
-);
+app.use(cors({
+  origin: [
+    "http://localhost:5173",
+    "https://mern-project-beta-six.vercel.app"  // ← add this
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true,
+}));
 
 app.use(express.json());
 
