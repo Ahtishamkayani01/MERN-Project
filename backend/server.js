@@ -16,7 +16,8 @@ const connectDB = require("./utils/db");
 app.use(cors({
   origin: [
     "http://localhost:5173",
-    "https://mern-project-beta-six.vercel.app"
+    "https://mern-project-beta-six.vercel.app",
+    "https://men-backend-virid.vercel.app"  // Add your current backend URL
   ],
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true,
@@ -24,6 +25,23 @@ app.use(cors({
 
 app.use(express.json());
 
+// Test routes
+app.get("/api/health", (req, res) => {
+  res.status(200).json({ 
+    status: "OK", 
+    message: "Server is running",
+    timestamp: new Date().toISOString()
+  });
+});
+
+app.get("/", (req, res) => {
+  res.json({ 
+    message: "API is working",
+    endpoints: ["/api/auth", "/api/form", "/api/admin", "/api/health"]
+  });
+});
+
+// Your actual routes
 app.use("/api/auth", authRoute);
 app.use("/api/form", contactRoute);
 app.use("/api/admin", adminRoute);
@@ -35,8 +53,14 @@ let dbConnected = false;
 
 const ensureDbConnection = async (req, res, next) => {
   if (!dbConnected) {
-    await connectDB();
-    dbConnected = true;
+    try {
+      await connectDB();
+      dbConnected = true;
+      console.log("Database connected successfully");
+    } catch (error) {
+      console.error("Database connection failed:", error);
+      // Don't block the request, just log the error
+    }
   }
   next();
 };
