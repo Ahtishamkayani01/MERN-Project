@@ -1,5 +1,4 @@
 const User = require("../models/user-model");
-const bcrypt = require("bcryptjs");
 
 const home = async (req, res) => {
   try {
@@ -9,24 +8,14 @@ const home = async (req, res) => {
   }
 };
 
-//User Register
 const register = async (req, res) => {
   try {
     const { userName, email, phone, password } = req.body;
-
     const userExist = await User.findOne({ email });
     if (userExist) {
       return res.status(400).json({ message: "email already exists" });
     }
-    //hash the password
-    // const saltRound = 10;
-    // const hash_password = await bcrypt.hash(password, saltRound);
-    const userCreated = await User.create({
-      userName,
-      email,
-      phone,
-      password,
-    });
+    const userCreated = await User.create({ userName, email, phone, password });
     res.status(201).json({
       message: "registration successful",
       token: await userCreated.generateToken(),
@@ -34,12 +23,11 @@ const register = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    res.status(400).send({ msg: "page not found" });
+    res.status(500).json({ msg: "Registration error" });
   }
 };
 
-//User Login
-const login = async (req, res) => {
+const login = async (req, res, next) => {   // ← added next
   try {
     const { email, password } = req.body;
     const userExist = await User.findOne({ email });
@@ -54,22 +42,10 @@ const login = async (req, res) => {
         userId: userExist._id.toString(),
       });
     } else {
-      res.status(401).json({
-        message: "Invalid email or password",
-      });
+      res.status(401).json({ message: "Invalid email or password" });
     }
   } catch (err) {
-    const status = 422;
-    const message = "Fill the input properly";
-    const extraDetails = err.errors[0].message;
-    const error = {
-      status,
-      message,
-      extraDetails,
-    };
-    console.log(error);
-    // res.status(400).json({ msg: message });
-    next(error);
+    next(err);
   }
 };
 
