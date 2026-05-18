@@ -13,28 +13,22 @@ const adminRoute = require("./routes/admin-route");
 const connectDB = require("./utils/db");
 
 // CORS configuration
-const allowedOrigins = [
-  "http://localhost:5173",
-  "http://localhost:3000",
-  "https://mern-project-beta-six.vercel.app",
-  "https://mern-backend-virid.vercel.app",
-];
-
 app.use(cors({
-  origin: function(origin, callback) {
-    if (!origin || allowedOrigins.includes(origin) || origin?.includes('vercel.app')) {
-      callback(null, true);
-    } else {
-      console.log('Blocked origin:', origin);
-      callback(null, true); // Allow all for now
-    }
-  },
+  origin: [
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "https://mern-project-beta-six.vercel.app",
+    "https://mern-backend-virid.vercel.app",
+    /\.vercel\.app$/
+  ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   credentials: true,
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
-app.options("*", cors());
+// REMOVED the problematic line - don't use app.options("*", cors())
+// app.options("*", cors());  // ← DELETE OR COMMENT THIS LINE
+
 app.use(express.json());
 
 // Test routes
@@ -53,7 +47,14 @@ app.get("/", (req, res) => {
   });
 });
 
-// Database connection middleware
+// Your actual routes
+app.use("/api/auth", authRoute);
+app.use("/api/form", contactRoute);
+app.use("/api/admin", adminRoute);
+
+app.use(errorMiddleware);
+
+// Connect to database
 let dbConnected = false;
 
 const ensureDbConnection = async (req, res, next) => {
@@ -64,29 +65,17 @@ const ensureDbConnection = async (req, res, next) => {
       console.log("Database connected successfully");
     } catch (error) {
       console.error("Database connection failed:", error);
-      // Don't block the request, just log
     }
   }
   next();
 };
 
-// Apply database connection to routes that need it
-app.use("/api/auth", ensureDbConnection);
-app.use("/api/form", ensureDbConnection);
-app.use("/api/admin", ensureDbConnection);
+app.use(ensureDbConnection);
 
-// Routes
-app.use("/api/auth", authRoute);
-app.use("/api/form", contactRoute);
-app.use("/api/admin", adminRoute);
-
-// Error handling
-app.use(errorMiddleware);
-
-// 404 handler
+// 404 handler - also avoid using '*' here
 app.use((req, res) => {
   res.status(404).json({ message: "Route not found" });
 });
 
-// Export for Vercel
+// Export for Vercel serverless function
 module.exports = app;
