@@ -12,16 +12,22 @@ const contactRoute = require("./routes/contact-route");
 const adminRoute = require("./routes/admin-route");
 const connectDB = require("./utils/db");
 
-// CORS — allow frontend dev server
+// CORS configuration - Allow all origins for testing
 app.use(cors({
   origin: [
     "http://localhost:5173",
+    "http://localhost:3000",
     "https://mern-project-beta-six.vercel.app",
-    "https://men-backend-virid.vercel.app"  // Add your current backend URL
+    "https://mern-backend-virid.vercel.app",
+    /\.vercel\.app$/  // Allow all vercel.app subdomains
   ],
-  methods: ["GET", "POST", "PUT", "DELETE"],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   credentials: true,
+  allowedHeaders: ["Content-Type", "Authorization"]
 }));
+
+// Handle preflight requests
+app.options("*", cors());
 
 app.use(express.json());
 
@@ -59,7 +65,6 @@ const ensureDbConnection = async (req, res, next) => {
       console.log("Database connected successfully");
     } catch (error) {
       console.error("Database connection failed:", error);
-      // Don't block the request, just log the error
     }
   }
   next();
