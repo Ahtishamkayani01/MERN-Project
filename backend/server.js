@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const errorMiddleware = require("./middlewares/error-middleware");
+const connectDB = require("./utils/db");
 
 const dns = require("dns");
 dns.setServers(["1.1.1.1", "8.8.8.8"]);
@@ -10,7 +11,6 @@ const app = express();
 const authRoute = require("./routes/auth-route");
 const contactRoute = require("./routes/contact-route");
 const adminRoute = require("./routes/admin-route");
-const connectDB = require("./utils/db");
 
 // CORS configuration
 app.use(cors({
@@ -25,9 +25,6 @@ app.use(cors({
   credentials: true,
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
-
-// REMOVED the problematic line - don't use app.options("*", cors())
-// app.options("*", cors());  // ← DELETE OR COMMENT THIS LINE
 
 app.use(express.json());
 
@@ -54,28 +51,24 @@ app.use("/api/admin", adminRoute);
 
 app.use(errorMiddleware);
 
-// Connect to database
-let dbConnected = false;
-
-const ensureDbConnection = async (req, res, next) => {
-  if (!dbConnected) {
-    try {
-      await connectDB();
-      dbConnected = true;
-      console.log("Database connected successfully");
-    } catch (error) {
-      console.error("Database connection failed:", error);
-    }
-  }
-  next();
-};
-
-app.use(ensureDbConnection);
-
-// 404 handler - also avoid using '*' here
+// 404 handler
 app.use((req, res) => {
   res.status(404).json({ message: "Route not found" });
 });
 
-// Export for Vercel serverless function
+// ✅ Connect to DB FIRST, then start server
+const PORT = process.env.PORT || 5000;
+
+connectDB()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error("Failed to connect to MongoDB:", err);
+    process.exit(1);
+  });
+
+// Export for Vercel serverless
 module.exports = app;

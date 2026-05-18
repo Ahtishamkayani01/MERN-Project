@@ -3,10 +3,7 @@ const mongoose = require('mongoose');
 const connectDB = async () => {
   try {
     if (mongoose.connection.readyState === 0) {
-      await mongoose.connect(process.env.MONGODB_URI, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-      });
+      await mongoose.connect(process.env.MONGODB_URI);
       console.log('MongoDB connected');
     }
     return mongoose.connection;
