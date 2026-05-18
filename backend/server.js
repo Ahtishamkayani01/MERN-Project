@@ -16,7 +16,7 @@ const connectDB = require("./utils/db");
 app.use(cors({
   origin: [
     "http://localhost:5173",
-    "https://mern-project-beta-six.vercel.app"  // ← add this
+    "https://mern-project-beta-six.vercel.app"
   ],
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true,
@@ -30,9 +30,18 @@ app.use("/api/admin", adminRoute);
 
 app.use(errorMiddleware);
 
-connectDB().then(() => {
-  const PORT = process.env.PORT || 5000;
-  app.listen(PORT, () => {
-    console.log(`server is running at port ${PORT}`);
-  });
-});
+// Connect to database before handling requests
+let dbConnected = false;
+
+const ensureDbConnection = async (req, res, next) => {
+  if (!dbConnected) {
+    await connectDB();
+    dbConnected = true;
+  }
+  next();
+};
+
+app.use(ensureDbConnection);
+
+// Export for Vercel serverless function
+module.exports = app;
