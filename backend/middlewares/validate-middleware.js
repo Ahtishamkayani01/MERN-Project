@@ -4,7 +4,12 @@ const validate = (schema) => async (req, res, next) => {
     req.body = parseBody;
     next();
   } catch (error) {
-    res.status(400).json({ msg: "validation failed" });
+    console.log("Validation error:", error.errors);
+    res.status(400).json({ 
+      msg: "Validation failed", 
+      errors: error.errors 
+    });
   }
 };
+
 module.exports = validate;
