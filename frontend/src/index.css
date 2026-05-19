@@ -23,6 +23,9 @@
   --font-mono: 'Space Mono', monospace;
   --shadow: 0 8px 32px rgba(0,0,0,0.4);
   --glow: 0 0 20px rgba(108, 99, 255, 0.15);
+  --navbar-h: 64px;
+  --footer-h: 72px;
+  --page-h: calc(100dvh - var(--navbar-h) - var(--footer-h));
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -77,7 +80,7 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 0 2rem;
-  height: 64px;
+  height: var(--navbar-h);
   background: rgba(10,10,15,0.85);
   backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border);
@@ -158,7 +161,7 @@ body {
   .nav-links {
     display: none;
     position: absolute;
-    top: 64px;
+    top: var(--navbar-h);
     left: 0; right: 0;
     background: var(--bg2);
     flex-direction: column;
@@ -173,7 +176,8 @@ body {
 /* ───── FOOTER ───── */
 .footer {
   border-top: 1px solid var(--border);
-  padding: 2rem;
+  padding: 0 2rem;
+  height: var(--footer-h);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -212,11 +216,12 @@ body {
 
 /* ───── COMMON FORM / CARD ───── */
 .page-section {
-  min-height: calc(100vh - 64px - 80px);
+  height: var(--page-h);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 3rem 1.5rem;
+  padding: 2rem 1.5rem;
+  overflow: hidden;
 }
 
 .card {
@@ -339,12 +344,12 @@ body {
 
 /* ───── HOME PAGE ───── */
 .hero {
-  min-height: calc(100vh - 64px);
+  height: var(--page-h);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 4rem 2rem;
+  padding: 2rem;
   text-align: center;
   position: relative;
   overflow: hidden;
@@ -437,12 +442,204 @@ body {
 .feature-title { font-family: var(--font-display); font-weight: 700; margin-bottom: 0.4rem; font-size: 1rem; }
 .feature-desc { font-size: 0.8rem; color: var(--text2); line-height: 1.6; }
 
+/* ───── LOGIN PAGE ───── */
+.login-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  width: 100%;
+  max-width: 900px;
+  align-items: center;
+}
+
+.login-card {
+  max-width: 100%;
+}
+
+/* Demo panel */
+.demo-panel {
+  animation: fadeUp 0.4s ease both;
+}
+
+.demo-panel-inner {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 2rem;
+  box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+}
+
+.demo-panel-inner::before {
+  content: '';
+  position: absolute;
+  top: -60px;
+  right: -60px;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(108,99,255,0.1) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.demo-eyebrow {
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.5rem;
+}
+
+.demo-heading {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+
+.demo-sub {
+  font-size: 0.78rem;
+  color: var(--text2);
+  line-height: 1.7;
+  margin-bottom: 1.5rem;
+}
+
+.demo-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.demo-card {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.85rem 1rem;
+  background: var(--db, rgba(108,99,255,0.06));
+  border: 1px solid var(--dbo, rgba(108,99,255,0.2));
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.2s;
+  text-align: left;
+  font-family: var(--font-mono);
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.demo-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--dc, #6c63ff);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.demo-card.filling::after { opacity: 0.06; }
+.demo-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.3); border-color: var(--dc, #6c63ff); }
+.demo-card:active { transform: scale(0.98); }
+
+.demo-card-icon {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+
+.demo-card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.18rem;
+}
+
+.demo-card-top {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.demo-card-label {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.demo-badge {
+  display: inline-block;
+  padding: 0.1rem 0.5rem;
+  border-radius: 20px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  border: 1px solid;
+}
+
+.demo-card-email {
+  font-size: 0.72rem;
+  color: var(--text2);
+}
+
+.demo-card-pass {
+  font-size: 0.72rem;
+  color: var(--text3);
+  letter-spacing: 0.1em;
+}
+
+.demo-card-arrow {
+  font-size: 1rem;
+  color: var(--dc, #6c63ff);
+  opacity: 0.7;
+  transition: transform 0.2s, opacity 0.2s;
+}
+
+.demo-card:hover .demo-card-arrow {
+  transform: translateX(4px);
+  opacity: 1;
+}
+
+.demo-features {
+  border-top: 1px solid var(--border);
+  padding-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.demo-feature-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.75rem;
+  color: var(--text2);
+}
+
+/* Responsive login */
+@media (max-width: 780px) {
+  .login-layout {
+    grid-template-columns: 1fr;
+    overflow-y: auto;
+  }
+  .page-section {
+    height: auto;
+    min-height: var(--page-h);
+    overflow: auto;
+    align-items: flex-start;
+    padding: 2rem 1rem;
+  }
+}
+
 /* ───── ADMIN DASHBOARD ───── */
 .admin-page {
   padding: 2rem;
   max-width: 1200px;
   margin: 0 auto;
   animation: fadeUp 0.4s ease;
+  height: var(--page-h);
+  overflow-y: auto;
 }
 
 .admin-header {
@@ -575,4 +772,42 @@ body {
   .data-table { font-size: 0.75rem; }
   .data-table th, .data-table td { padding: 0.6rem 0.5rem; }
   .admin-page { padding: 1rem; }
+}
+
+/* ───── CONTACT PAGE ───── */
+.contact-section {
+  height: var(--page-h);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+  overflow: hidden;
+}
+
+@media (max-width: 600px) {
+  .contact-section {
+    height: auto;
+    min-height: var(--page-h);
+    align-items: flex-start;
+    padding: 2rem 1rem;
+  }
+}
+
+/* ───── SIGNUP PAGE ───── */
+.signup-section {
+  height: var(--page-h);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+  overflow: hidden;
+}
+
+@media (max-width: 600px) {
+  .signup-section {
+    height: auto;
+    min-height: var(--page-h);
+    align-items: flex-start;
+    padding: 2rem 1rem;
+  }
 }

@@ -4,7 +4,7 @@ const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 export default function Contact() {
   const [form, setForm] = useState({ username: "", email: "", message: "" });
-  const [status, setStatus] = useState(null); // 'success' | 'error'
+  const [status, setStatus] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
@@ -30,7 +30,7 @@ export default function Contact() {
   };
 
   return (
-    <section className="page-section">
+    <section className="contact-section">
       <div className="card" style={{ maxWidth: 520 }}>
         <h1 className="card-title">Get in touch.</h1>
         <p className="card-sub">Fill the form and I'll get back to you.</p>

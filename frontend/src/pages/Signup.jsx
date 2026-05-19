@@ -38,7 +38,7 @@ export default function Signup() {
   };
 
   return (
-    <section className="page-section">
+    <section className="signup-section">
       <div className="card">
         <h1 className="card-title">Create account.</h1>
         <p className="card-sub">
