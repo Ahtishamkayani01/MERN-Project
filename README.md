@@ -16,7 +16,6 @@ A full-stack **MongoDB · Express · React · Node.js** app with JWT login and s
 </div>
 
 ---
-
 ## 📑 Table of Contents
 
 - [Features](#-features)
