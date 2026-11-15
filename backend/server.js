@@ -44,6 +44,18 @@ app.get("/", (req, res) => {
   });
 });
 
+// Ensure the DB is connected before any DB-backed route.
+// If it fails, answer with JSON (CORS headers still apply) instead of crashing.
+const requireDB = async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    res.status(503).json({ message: "Database unavailable", error: err.message });
+  }
+};
+app.use(["/api/auth", "/api/form", "/api/admin"], requireDB);
+
 // Your actual routes
 app.use("/api/auth", authRoute);
 app.use("/api/form", contactRoute);
@@ -56,19 +68,14 @@ app.use((req, res) => {
   res.status(404).json({ message: "Route not found" });
 });
 
-// ✅ Connect to DB FIRST, then start server
-const PORT = process.env.PORT || 5000;
-
-connectDB()
-  .then(() => {
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-    });
-  })
-  .catch((err) => {
-    console.error("Failed to connect to MongoDB:", err);
-    process.exit(1);
+// Locally: start a normal server. On Vercel the exported app is used instead.
+if (!process.env.VERCEL) {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
   });
+  connectDB().catch(() => {}); // warm up; errors are reported per request
+}
 
 // Export for Vercel serverless
 module.exports = app;
